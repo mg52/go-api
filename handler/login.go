@@ -48,13 +48,8 @@ func (h *loginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	theUser, err := h.userRepository.GetOneByUsernameAndPassword(u.Name, u.Password)
-	if err != nil {
-		helper.InternalServerError(w, r, err)
-		return
-	}
-
-	if theUser == nil {
-		helper.Unauthorized(w, r, nil)
+	if err != nil || theUser == nil {
+		helper.Resp(w, r, http.StatusUnauthorized, "username or password is incorrect")
 		return
 	}
 

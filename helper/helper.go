@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+func Resp(w http.ResponseWriter, r *http.Request, httpStatusCode int, msg string) {
+	var resp domain.Response
+	resp.Msg = msg
+	jsonBytes, _ := json.Marshal(resp)
+	w.WriteHeader(httpStatusCode)
+	w.Write(jsonBytes)
+}
+
 func NotFound(w http.ResponseWriter, r *http.Request) {
 	var resp domain.Response
 	resp.Msg = "not found"
