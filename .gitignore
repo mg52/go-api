@@ -27,5 +27,4 @@ vendor
 
 # for drone
 secrets.txt
-
-.env
+/.env

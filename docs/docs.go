@@ -21,7 +21,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
+        "/auth": {
+            "put": {
+                "description": "Signup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Signup",
+                "parameters": [
+                    {
+                        "description": "Sign up Input",
+                        "name": "signup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Authentication"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Login",
                 "consumes": [
@@ -31,13 +63,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "login"
+                    "Auth"
                 ],
                 "summary": "Login",
                 "parameters": [
                     {
-                        "description": "Login Input",
-                        "name": "authLogin",
+                        "description": "Auth Input",
+                        "name": "auth",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -56,40 +88,6 @@ const docTemplate = `{
             }
         },
         "/user": {
-            "get": {
-                "description": "User List",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "User List",
-                "operationId": "auth-login",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Token with the bearer started",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.User"
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "User Create",
                 "consumes": [
@@ -142,12 +140,20 @@ const docTemplate = `{
         },
         "domain.Login": {
             "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
             "properties": {
-                "name": {
-                    "type": "string"
-                },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 3
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 3
                 }
             }
         },
@@ -157,10 +163,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "password": {
                     "type": "string"
                 },
-                "password": {
+                "username": {
                     "type": "string"
                 }
             }

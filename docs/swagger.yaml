@@ -7,18 +7,25 @@ definitions:
     type: object
   domain.Login:
     properties:
-      name:
-        type: string
       password:
+        maxLength: 12
+        minLength: 3
         type: string
+      username:
+        maxLength: 10
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
     type: object
   domain.User:
     properties:
       id:
         type: integer
-      name:
-        type: string
       password:
+        type: string
+      username:
         type: string
     type: object
 host: localhost:3000
@@ -32,15 +39,15 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
-  /login:
+  /auth:
     post:
       consumes:
       - application/json
       description: Login
       parameters:
-      - description: Login Input
+      - description: Auth Input
         in: body
-        name: authLogin
+        name: auth
         required: true
         schema:
           $ref: '#/definitions/domain.Login'
@@ -53,31 +60,29 @@ paths:
             $ref: '#/definitions/domain.Authentication'
       summary: Login
       tags:
-      - login
-  /user:
-    get:
+      - Auth
+    put:
       consumes:
       - application/json
-      description: User List
-      operationId: auth-login
+      description: Signup
       parameters:
-      - description: Token with the bearer started
-        in: header
-        name: Authorization
+      - description: Sign up Input
+        in: body
+        name: signup
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/domain.Login'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/domain.User'
-            type: array
-      summary: User List
+            $ref: '#/definitions/domain.Authentication'
+      summary: Signup
       tags:
-      - user
+      - Auth
+  /user:
     post:
       consumes:
       - application/json

@@ -1,55 +1,14 @@
 package helper
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mg52/go-api/domain"
 	"github.com/sirupsen/logrus"
-	"net/http"
+	"golang.org/x/crypto/bcrypt"
 	"os"
 	"time"
 )
-
-func Resp(w http.ResponseWriter, r *http.Request, httpStatusCode int, msg string) {
-	var resp domain.Response
-	resp.Msg = msg
-	jsonBytes, _ := json.Marshal(resp)
-	w.WriteHeader(httpStatusCode)
-	w.Write(jsonBytes)
-}
-
-func NotFound(w http.ResponseWriter, r *http.Request) {
-	var resp domain.Response
-	resp.Msg = "not found"
-	jsonBytes, _ := json.Marshal(resp)
-	w.WriteHeader(http.StatusNotFound)
-	w.Write(jsonBytes)
-}
-
-func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
-	var resp domain.Response
-	resp.Err = err.Error()
-	jsonBytes, _ := json.Marshal(resp)
-	w.WriteHeader(http.StatusInternalServerError)
-	w.Write(jsonBytes)
-}
-
-func Unauthorized(w http.ResponseWriter, r *http.Request, err error) {
-	var resp domain.Response
-
-	w.WriteHeader(http.StatusUnauthorized)
-	if err != nil {
-		resp.Err = err.Error()
-		jsonBytes, _ := json.Marshal(resp)
-		w.Write(jsonBytes)
-	} else {
-		resp.Err = "unauthorized"
-		jsonBytes, _ := json.Marshal(resp)
-		w.Write(jsonBytes)
-	}
-
-}
 
 // NewLogger creates new Logger
 func NewLogger(environment string) *logrus.Entry {
@@ -69,7 +28,8 @@ func GenerateJWTToken(user domain.User) (string, error) {
 	expirationTime := time.Now().Add(5 * time.Minute)
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &domain.Claims{
-		Username: user.Name,
+		ID:       user.ID,
+		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
@@ -95,3 +55,8 @@ func GenerateJWTToken(user domain.User) (string, error) {
 //
 //	return id
 //}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}

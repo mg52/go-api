@@ -7,11 +7,12 @@ type Authentication struct {
 }
 
 type Login struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required,min=3,max=10"`
+	Password string `json:"password" validate:"required,min=3,max=12"`
 }
 
 type Claims struct {
+	ID       int    `json:"id"`
 	Username string `json:"username"`
 	jwt.RegisteredClaims
 }

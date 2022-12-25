@@ -1,70 +1,67 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
+	_ "github.com/lib/pq"
 	"github.com/mg52/go-api/domain"
 )
 
 type IUser interface {
-	GetAll() ([]domain.User, error)
+	//GetAll() ([]domain.User, error)
 	GetOneByUsername(username string) (*domain.User, error)
 	GetOneByUsernameAndPassword(username string, password string) (*domain.User, error)
+	CreateUser(*domain.User) (int, error)
 }
 
 var UserEntity IUser
 
 type userEntity struct {
-	users []domain.User
+	db *sql.DB
 }
 
-func NewUserEntity() IUser {
-	var users []domain.User
-	users = append(users, domain.User{
-		ID:       1,
-		Name:     "aaaaa",
-		Password: "passaaaaa",
-	})
-	users = append(users, domain.User{
-		ID:       2,
-		Name:     "bbbbb",
-		Password: "passbbbbb",
-	})
-	users = append(users, domain.User{
-		ID:       3,
-		Name:     "ccccc",
-		Password: "passccccc",
-	})
-	users = append(users, domain.User{
-		ID:       4,
-		Name:     "ddddd",
-		Password: "passddddd",
-	})
-	UserEntity = &userEntity{users: users}
+func NewUserEntity(db *sql.DB) IUser {
+	UserEntity = &userEntity{db: db}
 	return UserEntity
 }
 
-func (entity *userEntity) GetAll() ([]domain.User, error) {
-	return entity.users, nil
-}
+//func (entity *userEntity) GetAll() ([]domain.User, error) {
+//	return entity.users, nil
+//}
 
 func (entity *userEntity) GetOneByUsername(username string) (*domain.User, error) {
-	for _, theUser := range entity.users {
-		if theUser.Name == username {
-			return &theUser, nil
-			break
-		}
+	sqlStatementSelect := `SELECT * FROM users WHERE username=$1;`
+	var user domain.User
+	row := entity.db.QueryRow(sqlStatementSelect, username)
+	errSelect := row.Scan(&user.ID, &user.Username, &user.Password)
+	if errSelect != nil && errSelect == sql.ErrNoRows {
+		return nil, errors.New("user not found")
+	} else {
+		return &user, nil
 	}
-	return nil, errors.New("user not found")
 }
 
 func (entity *userEntity) GetOneByUsernameAndPassword(username string, password string) (*domain.User, error) {
-	for _, theUser := range entity.users {
-		if theUser.Name == username {
-			if theUser.Password == password {
-				return &theUser, nil
-				break
-			}
-		}
+	sqlStatementSelect := `SELECT * FROM users WHERE username=$1 and password=$2;`
+	var user domain.User
+	row := entity.db.QueryRow(sqlStatementSelect, username, password)
+	errSelect := row.Scan(&user.ID, &user.Username, &user.Password)
+	if errSelect != nil && errSelect == sql.ErrNoRows {
+		return nil, errors.New("user not found")
+	} else {
+		return &user, nil
 	}
-	return nil, errors.New("user not found")
+}
+
+func (entity *userEntity) CreateUser(user *domain.User) (int, error) {
+	insertStatement := `
+	INSERT INTO users (username, password)
+	VALUES ($1, $2)
+	RETURNING id`
+	id := 0
+	err := entity.db.QueryRow(insertStatement, user.Username, user.Password).Scan(&id)
+	if err != nil {
+		return -1, errors.New("user cannot be created")
+	}
+	return id, nil
 }

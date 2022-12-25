@@ -26,9 +26,9 @@ func (h *userHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 	switch {
-	case r.Method == http.MethodGet:
-		h.List(w, r)
-		return
+	//case r.Method == http.MethodGet:
+	//	h.List(w, r)
+	//	return
 	case r.Method == http.MethodPost:
 		h.Create(w, r)
 		return
@@ -48,21 +48,21 @@ func (h *userHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @Param Authorization header string true "Token with the bearer started"
 // @Success     200 {array} domain.User
 // @Router      /user [get]
-func (h *userHandler) List(w http.ResponseWriter, r *http.Request) {
-	allUsers, err := h.userRepository.GetAll()
-	if err != nil {
-		helper.InternalServerError(w, r, err)
-		return
-	}
-
-	jsonBytes, err := json.Marshal(allUsers)
-	if err != nil {
-		helper.InternalServerError(w, r, err)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
-}
+//func (h *userHandler) List(w http.ResponseWriter, r *http.Request) {
+//	allUsers, err := h.userRepository.GetAll()
+//	if err != nil {
+//		helper.InternalServerError(w, r, err)
+//		return
+//	}
+//
+//	jsonBytes, err := json.Marshal(allUsers)
+//	if err != nil {
+//		helper.InternalServerError(w, r, err)
+//		return
+//	}
+//	w.WriteHeader(http.StatusOK)
+//	w.Write(jsonBytes)
+//}
 
 // user godoc
 // @Summary     User Create
