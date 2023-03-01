@@ -122,12 +122,13 @@ func run(_ []string) error {
 	//	}
 
 	userRepository := repository.NewUserEntity(db)
-	// TODO: User handler will be removed and todo handler will be implemented and injected.
-	userHandler := handler.NewUserHandler(logrusEntry, userRepository)
+	todoRepository := repository.NewTodoEntity(db)
+
+	todoHandler := handler.NewTodoHandler(logrusEntry, todoRepository)
 	authHandler := handler.NewAuthHandler(logrusEntry, userRepository)
 
 	mux.Handle("/auth", middleware.ChainingMiddleware(authHandler, commonMiddlewares...))
-	mux.Handle("/user", middleware.ChainingMiddleware(userHandler, commonMiddlewaresWithAuth...))
+	mux.Handle("/todo", middleware.ChainingMiddleware(todoHandler, commonMiddlewaresWithAuth...))
 	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	srv := &http.Server{

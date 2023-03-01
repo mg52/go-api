@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -35,6 +36,8 @@ func RequireAuthentication(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
+
+		r.Header.Set("UID", strconv.Itoa(claims.ID))
 
 		next.ServeHTTP(w, r)
 		log.Print("Executing RequireAuthentication Middleware again")

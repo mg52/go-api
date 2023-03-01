@@ -19,14 +19,14 @@ definitions:
     - password
     - username
     type: object
-  domain.User:
+  domain.Todo:
     properties:
+      content:
+        type: string
       id:
         type: integer
-      password:
-        type: string
-      username:
-        type: string
+      user_id:
+        type: integer
     type: object
 host: localhost:3000
 info:
@@ -82,31 +82,28 @@ paths:
       summary: Signup
       tags:
       - Auth
-  /user:
-    post:
+  /todo:
+    get:
       consumes:
       - application/json
-      description: User Create
+      description: Todo List
+      operationId: auth-login
       parameters:
       - description: Token with the bearer started
         in: header
         name: Authorization
         required: true
         type: string
-      - description: User Input
-        in: body
-        name: authLogin
-        required: true
-        schema:
-          $ref: '#/definitions/domain.User'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.User'
-      summary: User Create
+            items:
+              $ref: '#/definitions/domain.Todo'
+            type: array
+      summary: Todo List
       tags:
-      - user
+      - todo
 swagger: "2.0"

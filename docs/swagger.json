@@ -80,9 +80,9 @@
                 }
             }
         },
-        "/user": {
-            "post": {
-                "description": "User Create",
+        "/todo": {
+            "get": {
+                "description": "Todo List",
                 "consumes": [
                     "application/json"
                 ],
@@ -90,9 +90,10 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "todo"
                 ],
-                "summary": "User Create",
+                "summary": "Todo List",
+                "operationId": "auth-login",
                 "parameters": [
                     {
                         "type": "string",
@@ -100,22 +101,16 @@
                         "name": "Authorization",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "description": "User Input",
-                        "name": "authLogin",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Todo"
+                            }
                         }
                     }
                 }
@@ -150,17 +145,17 @@
                 }
             }
         },
-        "domain.User": {
+        "domain.Todo": {
             "type": "object",
             "properties": {
+                "content": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
+                "user_id": {
+                    "type": "integer"
                 }
             }
         }
