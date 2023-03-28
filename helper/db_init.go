@@ -15,5 +15,19 @@ CREATE TABLE IF NOT EXISTS "users" (
 		return err
 	}
 
+	sqlStatementCreateTable2 := `
+CREATE TABLE IF NOT EXISTS "todos" (
+ id SERIAL PRIMARY KEY,
+ user_id INT NOT NULL,
+ content VARCHAR (255) NOT NULL,
+    CONSTRAINT FK_user_id FOREIGN KEY(user_id)
+        REFERENCES users(id)
+);`
+
+	_, err = db.Exec(sqlStatementCreateTable2)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

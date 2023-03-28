@@ -104,7 +104,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "todo"
+                    "Todo"
                 ],
                 "summary": "Todo List",
                 "operationId": "auth-login",

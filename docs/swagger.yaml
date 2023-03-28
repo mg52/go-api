@@ -105,5 +105,5 @@ paths:
             type: array
       summary: Todo List
       tags:
-      - todo
+      - Todo
 swagger: "2.0"

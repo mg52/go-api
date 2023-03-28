@@ -41,7 +41,7 @@ func (h *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // todo godoc
 // @Summary     Todo List
 // @Description Todo List
-// @Tags        todo
+// @Tags        Todo
 // @ID          auth-login
 // @Accept      json
 // @Produce     json
@@ -54,6 +54,10 @@ func (h *todoHandler) List(w http.ResponseWriter, r *http.Request) {
 		helper.InternalServerError(w, r, err)
 		return
 	}
+
+	h.logger.WithFields(logrus.Fields{
+		"uId": uId,
+	}).Info("uid print")
 
 	allTodos, err := h.todoRepository.GetAll(uId)
 	if err != nil {
