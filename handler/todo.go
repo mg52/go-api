@@ -2,7 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/mg52/go-api/docs"
+	"github.com/mg52/go-api/domain"
 	"github.com/mg52/go-api/helper"
 	"github.com/mg52/go-api/repository"
 	"github.com/sirupsen/logrus"
@@ -26,9 +28,9 @@ func (h *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 	switch {
-	//case r.Method == http.MethodGet:
-	//	h.List(w, r)
-	//	return
+	case r.Method == http.MethodPut:
+		h.Create(w, r)
+		return
 	case r.Method == http.MethodGet:
 		h.List(w, r)
 		return
@@ -45,7 +47,7 @@ func (h *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @ID          auth-login
 // @Accept      json
 // @Produce     json
-// @Param Authorization header string true "Token with the bearer started"
+// @Param Authorization header string true "Token with the Bearer started"
 // @Success     200 {array} domain.Todo
 // @Router      /todo [get]
 func (h *todoHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +68,60 @@ func (h *todoHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonBytes, err := json.Marshal(allTodos)
+	if err != nil {
+		helper.InternalServerError(w, r, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonBytes)
+}
+
+// Auth godoc
+// @Summary     Todo Create
+// @Description Todo Create
+// @Tags        Todo
+// @ID          auth-login
+// @Accept      json
+// @Produce     json
+// @Param Authorization header string true "Token with the Bearer started"
+// @Param       auth body     domain.TodoRequest true "Todo Input"
+// @Success     200 {array} domain.Todo
+// @Router      /todo [put]
+func (h *todoHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var u domain.Todo
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		helper.InternalServerError(w, r, err)
+		return
+	}
+
+	uId, err := strconv.Atoi(r.Header.Get("UID"))
+	if err != nil {
+		helper.InternalServerError(w, r, err)
+		return
+	}
+
+	u.UserID = uId
+
+	validate := validator.New()
+	err = validate.Struct(u)
+	if err != nil {
+		helper.Resp(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := h.todoRepository.CreateTodo(&u)
+	if err != nil {
+		helper.InternalServerError(w, r, err)
+		return
+	}
+
+	returnTodo := domain.Todo{
+		ID:      id,
+		UserID:  0,
+		Content: "",
+	}
+
+	jsonBytes, err := json.Marshal(returnTodo)
 	if err != nil {
 		helper.InternalServerError(w, r, err)
 		return

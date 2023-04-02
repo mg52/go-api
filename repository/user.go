@@ -25,10 +25,6 @@ func NewUserEntity(db *sql.DB) IUser {
 	return UserEntity
 }
 
-//func (entity *userEntity) GetAll() ([]domain.User, error) {
-//	return entity.users, nil
-//}
-
 func (entity *userEntity) GetOneByUsername(username string) (*domain.User, error) {
 	sqlStatementSelect := `SELECT * FROM users WHERE username=$1;`
 	var user domain.User

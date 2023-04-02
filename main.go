@@ -78,48 +78,6 @@ func run(_ []string) error {
 	if err != nil {
 		return err
 	}
-	//	sqlStatement := `
-	//CREATE TABLE IF NOT EXISTS users (
-	//  id SERIAL PRIMARY KEY,
-	//  username TEXT UNIQUE NOT NULL,
-	//  password TEXT NOT NULL
-	//);`
-	//	_, err = db.Exec(sqlStatement)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	//	sqlStatement2 := `
-	//	//INSERT INTO users (username, password)
-	//	//VALUES ($1, $2)
-	//	//RETURNING id`
-	//	//	id2 := 0
-	//	//	err = db.QueryRow(sqlStatement2, "mg52", "password").Scan(&id2)
-	//	//	if err != nil {
-	//	//		panic(err)
-	//	//	}
-	//	//	fmt.Println("New record ID2 is:", id2)
-	//	//
-	//	//	sqlStatement3 := `
-	//	//INSERT INTO users (username, password)
-	//	//VALUES ($1, $2)
-	//	//RETURNING id`
-	//	//	id3 := 0
-	//	//	err = db.QueryRow(sqlStatement3, "pinar", "pass2").Scan(&id3)
-	//	//	if err != nil {
-	//	//		panic(err)
-	//	//	}
-	//	//	fmt.Println("New record ID3 is:", id3)
-	//
-	//	sqlStatementSelect := `SELECT * FROM users WHERE id=$1;`
-	//	var user domain.User
-	//	row := db.QueryRow(sqlStatementSelect, 3)
-	//	errSelect := row.Scan(&user.ID, &user.Username, &user.Password)
-	//	if errSelect != nil && errSelect == sql.ErrNoRows {
-	//		fmt.Println("No rows were returned!")
-	//	} else {
-	//		fmt.Println(user)
-	//	}
 
 	userRepository := repository.NewUserEntity(db)
 	todoRepository := repository.NewTodoEntity(db)

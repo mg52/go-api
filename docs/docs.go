@@ -111,10 +111,53 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Token with the bearer started",
+                        "description": "Token with the Bearer started",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Todo"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Todo Create",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Todo Create",
+                "operationId": "auth-login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token with the Bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Todo Input",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.TodoRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -170,6 +213,14 @@ var doc = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "domain.TodoRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
                 }
             }
         }

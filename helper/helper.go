@@ -46,16 +46,6 @@ func GenerateJWTToken(user domain.User) (string, error) {
 	return tokenString, nil
 }
 
-//func GetUserIdFromToken(tokenReq string) (Id string) {
-//	token, _ := jwt.Parse(tokenReq, func(token *jwt.Token) (interface{}, error) {
-//		return []byte(""), nil
-//	})
-//	claim := token.Claims.(jwt.MapClaims)
-//	id := claim["id"].(string)
-//
-//	return id
-//}
-
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

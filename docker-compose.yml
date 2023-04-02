@@ -1,5 +1,25 @@
 version: "3.8"
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      ENV: dev
+      JWT_KEY: super_secret_jwt_key
+      SERVICE: go-api
+      PORT: 3000
+      SHUTDOWNTIMEOUT: 10
+      DBHOST: db
+      DBPORT: 5432
+      DBUSER: user
+      DBPASSWORD: admin
+      DBNAME: go-api-db
   db:
     image: postgres
     container_name: local_pgdb

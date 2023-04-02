@@ -28,6 +28,11 @@ definitions:
       user_id:
         type: integer
     type: object
+  domain.TodoRequest:
+    properties:
+      content:
+        type: string
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -89,7 +94,7 @@ paths:
       description: Todo List
       operationId: auth-login
       parameters:
-      - description: Token with the bearer started
+      - description: Token with the Bearer started
         in: header
         name: Authorization
         required: true
@@ -104,6 +109,35 @@ paths:
               $ref: '#/definitions/domain.Todo'
             type: array
       summary: Todo List
+      tags:
+      - Todo
+    put:
+      consumes:
+      - application/json
+      description: Todo Create
+      operationId: auth-login
+      parameters:
+      - description: Token with the Bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Todo Input
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/domain.TodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Todo'
+            type: array
+      summary: Todo Create
       tags:
       - Todo
 swagger: "2.0"
