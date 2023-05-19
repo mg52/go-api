@@ -3,6 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	_ "github.com/mg52/go-api/docs"
 	"github.com/mg52/go-api/domain"
@@ -10,7 +12,6 @@ import (
 	"github.com/mg52/go-api/repository"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 type authHandler struct {
