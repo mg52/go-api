@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+
 	_ "github.com/lib/pq"
 	"github.com/mg52/go-api/domain"
 )
@@ -32,8 +33,9 @@ func (entity *todoEntity) GetAll(uId int) ([]domain.Todo, error) {
 	defer rows.Close()
 	var todos []domain.Todo
 	for rows.Next() {
+		var rowId int
 		var td domain.Todo
-		if err := rows.Scan(&td.ID, &td.UserID, &td.Content); err != nil {
+		if err := rows.Scan(&rowId, &td.UserID, &td.Content); err != nil {
 			return todos, err
 		}
 		todos = append(todos, td)

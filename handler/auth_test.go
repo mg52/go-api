@@ -3,13 +3,13 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/mg52/go-api/domain"
-	"github.com/mg52/go-api/helper"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/mg52/go-api/domain"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type mockUserEntity struct {
@@ -58,8 +58,7 @@ func TestHealthCheckHandler(t *testing.T) {
 	}
 
 	userRepository := &mockUserEntity{}
-	logrusEntry := helper.NewLogger("dev")
-	authHandler := NewAuthHandler(logrusEntry, userRepository)
+	authHandler := NewAuthHandler(userRepository)
 
 	// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()

@@ -2,30 +2,25 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	_ "github.com/mg52/go-api/docs"
 	"github.com/mg52/go-api/domain"
 	"github.com/mg52/go-api/helper"
 	"github.com/mg52/go-api/repository"
-	"github.com/sirupsen/logrus"
-	"net/http"
-	"strconv"
 )
 
 type todoHandler struct {
-	logger         *logrus.Entry
 	todoRepository repository.ITodo
 }
 
-func NewTodoHandler(logger *logrus.Entry, todoRepository repository.ITodo) Handler {
-	return &todoHandler{logger: logger, todoRepository: todoRepository}
+func NewTodoHandler(todoRepository repository.ITodo) Handler {
+	return &todoHandler{todoRepository: todoRepository}
 }
 
 func (h *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.logger.WithFields(logrus.Fields{
-		"field_1": "abc",
-	}).Info("test")
-
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodPut:
@@ -56,10 +51,6 @@ func (h *todoHandler) List(w http.ResponseWriter, r *http.Request) {
 		helper.InternalServerError(w, r, err)
 		return
 	}
-
-	h.logger.WithFields(logrus.Fields{
-		"uId": uId,
-	}).Info("uid print")
 
 	allTodos, err := h.todoRepository.GetAll(uId)
 	if err != nil {
@@ -109,16 +100,15 @@ func (h *todoHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.todoRepository.CreateTodo(&u)
+	_, err = h.todoRepository.CreateTodo(&u)
 	if err != nil {
 		helper.InternalServerError(w, r, err)
 		return
 	}
 
 	returnTodo := domain.Todo{
-		ID:      id,
-		UserID:  0,
-		Content: "",
+		UserID:  uId,
+		Content: u.Content,
 	}
 
 	jsonBytes, err := json.Marshal(returnTodo)

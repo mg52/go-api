@@ -10,17 +10,15 @@ import (
 	"github.com/mg52/go-api/domain"
 	"github.com/mg52/go-api/helper"
 	"github.com/mg52/go-api/repository"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type authHandler struct {
-	logger         *logrus.Entry
 	userRepository repository.IUser
 }
 
-func NewAuthHandler(logger *logrus.Entry, userRepository repository.IUser) Handler {
-	return &authHandler{logger: logger, userRepository: userRepository}
+func NewAuthHandler(userRepository repository.IUser) Handler {
+	return &authHandler{userRepository: userRepository}
 }
 
 func (h *authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

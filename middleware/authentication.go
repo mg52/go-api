@@ -1,19 +1,20 @@
 package middleware
 
 import (
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/mg52/go-api/domain"
-	"github.com/mg52/go-api/helper"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/mg52/go-api/domain"
+	"github.com/mg52/go-api/helper"
 )
 
 func RequireAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Print("Executing RequireAuthentication Middleware")
+		slog.Info("Executing RequireAuthentication Middleware")
 		token := r.Header.Get("Authorization")
 		if token == "" {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -40,6 +41,6 @@ func RequireAuthentication(next http.Handler) http.Handler {
 		r.Header.Set("UID", strconv.Itoa(claims.ID))
 
 		next.ServeHTTP(w, r)
-		log.Print("Executing RequireAuthentication Middleware again")
+		slog.Info("Executing RequireAuthentication Middleware again")
 	})
 }

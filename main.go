@@ -4,6 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
+	"time"
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	_ "github.com/mg52/go-api/docs"
@@ -11,14 +19,7 @@ import (
 	"github.com/mg52/go-api/helper"
 	"github.com/mg52/go-api/middleware"
 	"github.com/mg52/go-api/repository"
-	"github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"net/http"
-	"os"
-	"os/signal"
-	"strconv"
-	"syscall"
-	"time"
 )
 
 // @title          Swagger Example API
@@ -34,7 +35,7 @@ import (
 // @BasePath /
 func main() {
 	if err := run(os.Args); err != nil {
-		logrus.Printf("main error, %v", err)
+		slog.Error("main error", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 }
@@ -58,12 +59,6 @@ func run(_ []string) error {
 	servicePort, _ := strconv.Atoi(os.Getenv("PORT"))
 	shutdownTimeOut, _ := strconv.Atoi(os.Getenv("SHUTDOWNTIMEOUT"))
 
-	env, ok := os.LookupEnv("ENV")
-	if !ok {
-		env = "dev"
-	}
-	logrusEntry := helper.NewLogger(env)
-
 	mux := http.NewServeMux()
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
@@ -82,8 +77,8 @@ func run(_ []string) error {
 	userRepository := repository.NewUserEntity(db)
 	todoRepository := repository.NewTodoEntity(db)
 
-	todoHandler := handler.NewTodoHandler(logrusEntry, todoRepository)
-	authHandler := handler.NewAuthHandler(logrusEntry, userRepository)
+	todoHandler := handler.NewTodoHandler(todoRepository)
+	authHandler := handler.NewAuthHandler(userRepository)
 
 	mux.Handle("/auth", middleware.ChainingMiddleware(authHandler, commonMiddlewares...))
 	mux.Handle("/todo", middleware.ChainingMiddleware(todoHandler, commonMiddlewaresWithAuth...))
@@ -98,10 +93,10 @@ func run(_ []string) error {
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() error {
-		logrusEntry.Infof("%s listening on 0.0.0.0:%d with %v timeout", os.Getenv("SERVICE"), servicePort, time.Duration(shutdownTimeOut)*time.Second)
+		slog.Info(fmt.Sprintf("%s listening on 0.0.0.0:%d with %v timeout", os.Getenv("SERVICE"), servicePort, time.Duration(shutdownTimeOut)*time.Second))
 		if err := srv.ListenAndServe(); err != nil {
 			if err != http.ErrServerClosed {
-				logrusEntry.Fatal(err)
+				slog.Error(err.Error())
 			}
 			return err
 		}
@@ -110,17 +105,17 @@ func run(_ []string) error {
 
 	<-stop
 
-	logrusEntry.Infof("%s shutting down ...", os.Getenv("SERVICE"))
+	slog.Info(fmt.Sprintf("%s shutting down...", os.Getenv("SERVICE")))
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(shutdownTimeOut)*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		logrusEntry.Fatal(err)
+		slog.Error(err.Error())
 		return err
 	}
 
-	logrusEntry.Infof("%s down", os.Getenv("SERVICE"))
+	slog.Info(fmt.Sprintf("%s shut down completed.", os.Getenv("SERVICE")))
 
 	return nil
 }

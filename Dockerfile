@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.21
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN go mod tidy
 
 COPY . .
 
-RUN go build -o /go-api
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=readonly -v -o  /go-api
 
 EXPOSE 3000
 

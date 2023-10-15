@@ -1,27 +1,27 @@
 package middleware
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 )
 
 func MiddlewareOne(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Print("Executing middlewareOne")
+		slog.Info("Executing middlewareOne")
 		next.ServeHTTP(w, r)
-		log.Print("Executing middlewareOne again")
+		slog.Info("Executing middlewareOne again")
 	})
 }
 
 func MiddlewareTwo(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Print("Executing middlewareTwo")
+		slog.Info("Executing middlewareTwo")
 		if r.URL.Path == "/foo" {
 			return
 		}
 
 		next.ServeHTTP(w, r)
-		log.Print("Executing middlewareTwo again")
+		slog.Info("Executing middlewareTwo again")
 	})
 }
 
